@@ -1,0 +1,2 @@
+-- Seed data is intentionally empty for the initial scaffold.
+-- Add demo rows here later if you want a richer local reset flow.

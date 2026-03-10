@@ -1,0 +1,13 @@
+.DS_Store
+.env
+node_modules/
+
+apps/web/node_modules/
+apps/web/.react-router/
+apps/web/.wrangler/
+apps/web/build/
+apps/web/.mf/
+apps/web/*.tsbuildinfo
+apps/web/.dev.vars
+
+supabase/.temp/

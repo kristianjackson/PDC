@@ -1,0 +1,22 @@
+{
+  "name": "life-telemetry",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "build": "npm --prefix apps/web run build",
+    "cf-typegen": "npm --prefix apps/web run cf-typegen",
+    "deploy:web": "npm --prefix apps/web run deploy",
+    "dev": "npm --prefix apps/web run dev",
+    "export:entries": "node scripts/export-entries.mjs",
+    "preview:worker": "node scripts/serve-web-build.mjs --env-file ./apps/web/.dev.vars --port 4173",
+    "smoke:web": "node scripts/smoke-web.mjs --env-file ./apps/web/.dev.vars",
+    "supabase:push:management": "node scripts/push-remote-schema.mjs",
+    "supabase:push": "npx supabase@latest db push",
+    "supabase:reset": "npx supabase@latest db reset",
+    "supabase:start": "npx supabase@latest start",
+    "supabase:stop": "npx supabase@latest stop",
+    "typecheck": "npm --prefix apps/web run typecheck"
+  }
+}
