@@ -3,7 +3,6 @@ import { startTransition, useEffect, useState } from "react";
 
 import type { Route } from "./+types/auth-callback";
 import { Card } from "~/components/ui/Card";
-import { ensureProfile } from "~/lib/db/profiles.server";
 import { getSupabaseBrowserClient } from "~/lib/supabase/client";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 
@@ -30,20 +29,21 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     responseHeaders,
   });
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  try {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-  if (error) {
-    throw redirect(`/auth?error=${encodeURIComponent(error.message)}`, {
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Could not complete sign-in. Request a fresh magic link.";
+
+    throw redirect(`/auth?error=${encodeURIComponent(message)}`, {
       headers: responseHeaders,
     });
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    await ensureProfile(supabase, user);
   }
 
   throw redirect(next, {

@@ -295,7 +295,7 @@ async function withRetry(run, label, attempts = 8) {
 
 function shouldRetry(error) {
   const code = error?.cause?.code ?? error?.code;
-  const message = `${error?.message ?? ""} ${error?.cause?.message ?? ""}`.toLowerCase();
+  const message = getErrorMessage(error).toLowerCase();
   const retriableCodes = new Set([
     "ECONNRESET",
     "EAI_AGAIN",
@@ -320,6 +320,17 @@ function isRecoverableCreateError(error) {
     message.includes("already registered") ||
     message.includes("user already exists")
   );
+}
+
+function getErrorMessage(error) {
+  if (error instanceof Error) {
+    const causeMessage =
+      error.cause instanceof Error ? error.cause.message : String(error.cause ?? "");
+
+    return `${error.message} ${causeMessage}`.trim();
+  }
+
+  return String(error ?? "");
 }
 
 function delay(ms) {
