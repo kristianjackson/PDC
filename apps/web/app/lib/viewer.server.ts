@@ -42,11 +42,36 @@ export async function getViewer({ env, request }: ViewerArgs) {
   let profile: Viewer["profile"] = null;
 
   if (user) {
-    const { data } = await supabase
+    let { data } = await supabase
       .from("profiles")
       .select("id, email")
       .eq("id", user.id)
       .maybeSingle();
+
+    if (!data) {
+      const { error } = await supabase.from("profiles").upsert(
+        {
+          id: user.id,
+          email: user.email ?? null,
+        },
+        {
+          ignoreDuplicates: false,
+          onConflict: "id",
+        },
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: ensuredProfile } = await supabase
+        .from("profiles")
+        .select("id, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      data = ensuredProfile;
+    }
 
     if (data) {
       profile = {
